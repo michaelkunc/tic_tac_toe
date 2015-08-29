@@ -2,12 +2,13 @@ class Game
   def initialize
     @board = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
     @tokens = ['X', 'O']
-    @computer_token = "X"
-    @hum = "O"
+    @computer_token = nil
+    @human_token = nil
   end
 
   def start_game
     puts "Welcome to my Tic Tac Toe game"
+    get_token
     puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
     until game_is_over(@board) || tie(@board)
       get_human_input
@@ -20,10 +21,17 @@ class Game
   end
 
   def get_token
-    puts "Please select your gameplay token...'X' or 'O'"
+    puts "Please select your gameplay token...#{@tokens[0]} or #{@tokens[1]}"
     token = gets.chomp
-
-
+    if @tokens.include?(token)
+      @human_token = token
+      @tokens.delete(token)
+      @computer_token = @tokens[0]
+    else
+      put "Let's try that again"
+      sleep 2
+      get_token
+    end
   end
 
   def get_human_input
@@ -31,7 +39,7 @@ class Game
     spot = gets.chomp
     if @board.include?(spot) && spot != 'X' && spot !='Y'
       #not crazy about the changing to integer here. too much type changing
-      @board[spot.to_i] = @hum
+      @board[spot.to_i] = @human_token
     else
       puts 'That spot is not legal'
       sleep 2
@@ -72,7 +80,7 @@ class Game
         board[as.to_i] = as
         return best_move
       else
-        board[as.to_i] = @hum
+        board[as.to_i] = @human_token
         if game_is_over(board)
           best_move = as.to_i
           board[as.to_i] = as
