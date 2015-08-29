@@ -9,13 +9,13 @@ class Game
   def start_game
     puts "Welcome to my Tic Tac Toe game"
     set_tokens
-    puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
+    print_board
     until game_is_over(@board) || tie(@board)
       get_human_input
       if !game_is_over(@board) && !tie(@board)
         eval_board
       end
-      puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
+      print_board
     end
     puts "Game over"
   end
@@ -47,6 +47,9 @@ class Game
     end
   end
 
+  def print_board
+    puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
+  end
 
   def eval_board
     spot = nil
@@ -98,20 +101,20 @@ class Game
     end
   end
 
-  def game_is_over(b)
+  def game_is_over(board)
 
-    [b[0], b[1], b[2]].uniq.length == 1 ||
-    [b[3], b[4], b[5]].uniq.length == 1 ||
-    [b[6], b[7], b[8]].uniq.length == 1 ||
-    [b[0], b[3], b[6]].uniq.length == 1 ||
-    [b[1], b[4], b[7]].uniq.length == 1 ||
-    [b[2], b[5], b[8]].uniq.length == 1 ||
-    [b[0], b[4], b[8]].uniq.length == 1 ||
-    [b[2], b[4], b[6]].uniq.length == 1
+    [board[0], board[1], board[2]].uniq.length == 1 ||
+    [board[3], board[4], board[5]].uniq.length == 1 ||
+    [board[6], board[7], board[8]].uniq.length == 1 ||
+    [board[0], board[3], board[6]].uniq.length == 1 ||
+    [board[1], board[4], board[7]].uniq.length == 1 ||
+    [board[2], board[5], board[8]].uniq.length == 1 ||
+    [board[0], board[4], board[8]].uniq.length == 1 ||
+    [board[2], board[4], board[6]].uniq.length == 1
   end
 
-  def tie(b)
-    b.all? { |s| s == "X" || s == "O" }
+  def tie(board)
+    board.all? { |spot| spot == "X" || spot == "O" }
   end
 
 end
