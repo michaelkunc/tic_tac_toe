@@ -8,7 +8,7 @@ class Game
   def start_game
     puts "Welcome to my Tic Tac Toe game"
     puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
-    puts "Please select your spot."
+    # puts "Please select your spot."
     until game_is_over(@board) || tie(@board)
       get_human_spot
       if !game_is_over(@board) && !tie(@board)
@@ -20,16 +20,30 @@ class Game
   end
 
   def get_human_spot
-    spot = nil
-    until spot
-      spot = gets.chomp.to_i
-      if @board[spot] != "X" && @board[spot] != "O"
-        @board[spot] = @hum
-      else
-        spot = nil
-      end
+    puts "Please select your spot"
+    spot = gets.chomp
+    if @board.include?(spot) && spot != 'X' && spot !='Y'
+      #not crazy about the changing to integer here. too much type changing
+      @board[spot.to_i] = @hum
+    else
+      puts 'That spot is not legal'
+      sleep 2
+      get_human_spot
     end
   end
+
+# theirs
+  # def get_human_spot
+  #   spot = nil
+  #   until spot
+  #     spot = gets.chomp.to_i
+  #     if @board[spot] != "X" && @board[spot] != "O"
+  #       @board[spot] = @hum
+  #     else
+  #       spot = nil
+  #     end
+  #   end
+  # end
 
   def eval_board
     spot = nil
