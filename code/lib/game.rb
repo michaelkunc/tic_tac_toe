@@ -8,7 +8,7 @@ class Game
 
   def start_game
     puts "Welcome to my Tic Tac Toe game"
-    get_token
+    set_tokens
     puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
     until game_is_over(@board) || tie(@board)
       get_human_input
@@ -20,7 +20,7 @@ class Game
     puts "Game over"
   end
 
-  def get_token
+  def set_tokens
     puts "Please select your gameplay token...#{@tokens[0]} or #{@tokens[1]}"
     token = gets.chomp
     if @tokens.include?(token)
@@ -30,7 +30,7 @@ class Game
     else
       put "Let's try that again"
       sleep 2
-      get_token
+      set_tokens
     end
   end
 
