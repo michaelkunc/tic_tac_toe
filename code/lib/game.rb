@@ -1,16 +1,16 @@
 class Game
   def initialize
     @board = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
-    @com = "X"
+    @tokens = ['X', 'O']
+    @computer_token = "X"
     @hum = "O"
   end
 
   def start_game
     puts "Welcome to my Tic Tac Toe game"
     puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
-    # puts "Please select your spot."
     until game_is_over(@board) || tie(@board)
-      get_human_spot
+      get_human_input
       if !game_is_over(@board) && !tie(@board)
         eval_board
       end
@@ -19,7 +19,14 @@ class Game
     puts "Game over"
   end
 
-  def get_human_spot
+  def get_token
+    puts "Please select your gameplay token...'X' or 'O'"
+    token = gets.chomp
+
+
+  end
+
+  def get_human_input
     puts "Please select your spot"
     spot = gets.chomp
     if @board.include?(spot) && spot != 'X' && spot !='Y'
@@ -28,33 +35,21 @@ class Game
     else
       puts 'That spot is not legal'
       sleep 2
-      get_human_spot
+      get_human_input
     end
   end
 
-# theirs
-  # def get_human_spot
-  #   spot = nil
-  #   until spot
-  #     spot = gets.chomp.to_i
-  #     if @board[spot] != "X" && @board[spot] != "O"
-  #       @board[spot] = @hum
-  #     else
-  #       spot = nil
-  #     end
-  #   end
-  # end
 
   def eval_board
     spot = nil
     until spot
       if @board[4] == "4"
         spot = 4
-        @board[spot] = @com
+        @board[spot] = @computer_token
       else
-        spot = get_best_move(@board, @com)
+        spot = get_best_move(@board, @computer_token)
         if @board[spot] != "X" && @board[spot] != "O"
-          @board[spot] = @com
+          @board[spot] = @computer_token
         else
           spot = nil
         end
@@ -71,7 +66,7 @@ class Game
       end
     end
     available_spaces.each do |as|
-      board[as.to_i] = @com
+      board[as.to_i] = @computer_token
       if game_is_over(board)
         best_move = as.to_i
         board[as.to_i] = as
