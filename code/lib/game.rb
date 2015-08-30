@@ -1,32 +1,51 @@
 class Game
   def initialize
-    @board = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    @board = Board.new
     @tokens = ['X', 'O']
-    @computer_token = nil
-    @human_token = nil
+    @player_1 = Player.new
+    @player_2 = Player.new
+    # @computer_token = nil
+    # @human_token = nil
   end
 
-  def start_game
+  def welcome
     puts "Welcome to my Tic Tac Toe game"
-    set_tokens
-    print_board
-    until game_is_over(@board) || tie(@board)
-      get_human_input
-      if !game_is_over(@board) && !tie(@board)
-        eval_board
-      end
-      print_board
-    end
-    puts "Game over"
+    sleep 1
+    puts "-------------------------------"
+    @board.print_board
+    puts "The board is numbered 1 - 9 starting with the top left"
+    sleep 1
   end
+
+
+  def start_game
+      welcome
+      player_names
+      set_tokens
+  #   until game_is_over(@board) || tie(@board)
+  #     get_human_input
+  #     if !game_is_over(@board) && !tie(@board)
+  #       eval_board
+  #     end
+  #     @board.print_board
+  #   end
+  #   puts "Game over"
+  end
+
+  def player_names
+    puts "Player 1 - please enter your name"
+    @player_1.name = gets.chomp
+    puts "Welcome #{@player_1.name}"
+  end
+
 
   def set_tokens
     puts "Please select your gameplay token...#{@tokens[0]} or #{@tokens[1]}"
     token = gets.chomp
     if @tokens.include?(token)
-      @human_token = token
+      @player_1.token = token
       @tokens.delete(token)
-      @computer_token = @tokens[0]
+      @player_2.token = @tokens[0]
     else
       put "Let's try that again"
       sleep 2
@@ -34,12 +53,20 @@ class Game
     end
   end
 
+  def check_for_winner(player)
+    win_conditions = [[0, 1 ,2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
+                      [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+    win_conditions.each do |row|
+      return player if row.all? {|cell| @board.board[0] == player.token}
+    end
+  end
+
+
   def get_human_input
     puts "Please select your spot"
-    spot = gets.chomp
-    if @board.include?(spot) && spot != 'X' && spot !='Y'
-      #not crazy about the changing to integer here. too much type changing
-      @board[spot.to_i] = @human_token
+    spot = gets.chomp.to_i
+    if @board.include?(spot)
+      @board[spot] = @human_token
     else
       puts 'That spot is not legal'
       sleep 2
@@ -47,9 +74,6 @@ class Game
     end
   end
 
-  def print_board
-    puts "|_#{@board[0]}_|_#{@board[1]}_|_#{@board[2]}_|\n|_#{@board[3]}_|_#{@board[4]}_|_#{@board[5]}_|\n|_#{@board[6]}_|_#{@board[7]}_|_#{@board[8]}_|\n"
-  end
 
   def eval_board
     spot = nil
@@ -101,20 +125,47 @@ class Game
     end
   end
 
-  def game_is_over(board)
+  # def game_is_over(board)
 
-    [board[0], board[1], board[2]].uniq.length == 1 ||
-    [board[3], board[4], board[5]].uniq.length == 1 ||
-    [board[6], board[7], board[8]].uniq.length == 1 ||
-    [board[0], board[3], board[6]].uniq.length == 1 ||
-    [board[1], board[4], board[7]].uniq.length == 1 ||
-    [board[2], board[5], board[8]].uniq.length == 1 ||
-    [board[0], board[4], board[8]].uniq.length == 1 ||
-    [board[2], board[4], board[6]].uniq.length == 1
-  end
+  #   [board[0], board[1], board[2]].uniq.length == 1 ||
+  #   [board[3], board[4], board[5]].uniq.length == 1 ||
+  #   [board[6], board[7], board[8]].uniq.length == 1 ||
+  #   [board[0], board[3], board[6]].uniq.length == 1 ||
+  #   [board[1], board[4], board[7]].uniq.length == 1 ||
+  #   [board[2], board[5], board[8]].uniq.length == 1 ||
+  #   [board[0], board[4], board[8]].uniq.length == 1 ||
+  #   [board[2], board[4], board[6]].uniq.length == 1
+  # end
 
   def tie(board)
-    board.all? { |spot| spot == "X" || spot == "O" }
+    board.all? { |cell| cell == "X" || cell == "O" }
+  end
+
+end
+
+
+class Board
+  attr_reader :board
+
+  def initialize
+    @board = Array.new(9, "-")
+
+  end
+
+  def print_board
+    puts "\n"
+    @board.each_slice(3) {|row| puts row.join(" | ")}
+    puts "\n"
+  end
+
+end
+
+class Player
+  attr_accessor :name, :token
+
+  def initialize
+    @name = nil
+    @token = nil
   end
 
 end
