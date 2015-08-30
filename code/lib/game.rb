@@ -62,14 +62,14 @@ class Game
   end
 
   def human_vs_computer_game
-    player_names(@player_1)
-    @player_2.name = @player_2.generate_computer_name
+    @player_1.player_name
+    @player_2.generate_computer_name
     puts "#{@player_2.name} is your computer opponent"
     set_tokens
     until game_over
       turn(@player_1.name, @player_1.token)
       @round += 1
-      computer_turn(@player_2.name, @player_2.token)
+      computer_turn(@player_2.name, @player_2.token, @player_1.token)
       @round += 1
     end
       game_over_message
@@ -115,14 +115,45 @@ class Game
   end
 
 
-  def computer_turn(name, token)
+  def computer_turn(name, token, opponent_token)
     @board.print_board
     round_message(name)
-    computer_random_selection(name, token)
+    computer_evaluate_board(name,token, opponent_token)
     sleep 1
   end
 
-  def computer_random_selection(name, token)
+  def computer_evaluate_board(name, token, opponent_token)
+    if @board.board[4] == "-"
+      computer_center(name, token)
+    elsif @board.board.count(opponent_token) > 1
+      computer_protect(name, token, opponent_token)
+    else
+      computer_random(name, token)
+    end
+  end
+
+  def computer_center(name, token)
+      @board.board[4] = token
+      computer_place_token_message(name, 4)
+  end
+
+  def computer_protect(name, token, opponent_token)
+    #this iteration is happening correctly
+      @win_conditions.each do |row|
+        #this condition is not being evaluated properly this is returning zero
+        puts row.count(opponent_token)
+        if row.count(opponent_token) > 1
+          cell = row.index("-")
+          @board.board[cell] = token
+          commputer_place_token_message(name,cell )
+        else
+          puts "If logic seems to be broken"
+        end
+      end
+
+  end
+
+  def computer_random(name, token)
     available_spaces = []
     @board.board.each_with_index {|cell, index| available_spaces << index if cell == "-"}
     cell = available_spaces.sample
@@ -133,10 +164,13 @@ class Game
 
 
 
+
+
   def computer_place_token_message(name, index)
     index += 1
     puts "#{name} has placed a token at #{index}"
   end
+
 
   def game_over
      @winner || @round > 9
