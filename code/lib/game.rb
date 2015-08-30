@@ -9,6 +9,8 @@ class Game
                        [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     @winner = nil
     @round = 1
+    @game_types = {1 => "Human vs. Human", 2 => "Human vs. Computer", 3 => "Computer vs Computer"}
+    @this_game_type = nil
   end
 
   def welcome_message
@@ -20,16 +22,27 @@ class Game
     sleep 1
   end
 
-# look at using a hash to protect the order of the variables
+  def game_selection_message
+    puts "Please select the type of game your would like to play"
+    puts "\n"
+    puts "Select 1 for #{@game_types[1]}"
+    puts "\n"
+    puts "Select 2 for Human vs. Computer"
+    puts "\n"
+    puts "Select 3 for Computer vs. Computer"
+    input = gets.chomp
+  end
+
+
+
   def play_game
       welcome_message
+      game_selection_message
       @players.each {|player| player_names(player)}
       set_tokens
       until game_over
-        @players.each do |player|
-          turn(player.name, player.token)
+          take_turns
           @round += 1
-        end
       end
       game_over_message
   end
@@ -66,6 +79,16 @@ class Game
     round_message(name)
     update(token)
     check_for_winner(token, name)
+    @board.print_board if game_over
+  end
+
+  def take_turns
+    if @round.odd?
+      turn(@player_1.name, @player_1.token)
+    else
+      turn(@player_2.name, @player_2.token)
+    end
+
   end
 
   def game_over
@@ -80,7 +103,6 @@ class Game
     end
   end
 
-#watch this interface
   def check_for_winner(token, name)
     @win_conditions.each do |row|
       if row.all? {|cell| @board.board[cell] == token}
@@ -161,21 +183,6 @@ class Game
   #   end
   # end
 
-  # def game_is_over(board)
-
-  #   [board[0], board[1], board[2]].uniq.length == 1 ||
-  #   [board[3], board[4], board[5]].uniq.length == 1 ||
-  #   [board[6], board[7], board[8]].uniq.length == 1 ||
-  #   [board[0], board[3], board[6]].uniq.length == 1 ||
-  #   [board[1], board[4], board[7]].uniq.length == 1 ||
-  #   [board[2], board[5], board[8]].uniq.length == 1 ||
-  #   [board[0], board[4], board[8]].uniq.length == 1 ||
-  #   [board[2], board[4], board[6]].uniq.length == 1
-  # end
-
-  # def tie(board)
-  #   board.all? { |cell| cell == "X" || cell == "O" }
-  # end
 
 end
 
