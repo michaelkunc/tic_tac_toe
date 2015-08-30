@@ -13,6 +13,12 @@ class Game
     @this_game_type = nil
   end
 
+  def start_game
+    welcome_message
+    game_selection_message
+    game_selection
+  end
+
   def welcome_message
     puts "Welcome to my Tic Tac Toe game"
     sleep 1
@@ -24,21 +30,29 @@ class Game
 
   def game_selection_message
     puts "Please select the type of game your would like to play"
-    puts "\n"
-    puts "Select 1 for #{@game_types[1]}"
-    puts "\n"
-    puts "Select 2 for Human vs. Computer"
-    puts "\n"
-    puts "Select 3 for Computer vs. Computer"
-    input = gets.chomp
+    @game_types.each do |key, value|
+      puts "Select #{key} for #{value}"
+    end
+    input = gets.chomp.to_i
+    @this_game_type = @game_types[input]
+  end
+
+#not crazy about this design right now
+  def game_selection
+    case @this_game_type
+    when @game_types[1]
+      human_vs_human_game
+    when @game_types[2]
+      human_vs_computer_game
+    when @game_types[3]
+      computer_vs_computer_game
+    end
   end
 
 
-
-  def play_game
-      welcome_message
-      game_selection_message
-      @players.each {|player| player_names(player)}
+  def human_vs_human_game
+      @player_1.player_name
+      @player_2.player_name
       set_tokens
       until game_over
           take_turns
@@ -47,12 +61,22 @@ class Game
       game_over_message
   end
 
-  def player_names(player)
-    puts "Please enter your name"
-    player.name = gets.chomp
-    sleep 1
-    puts "Welcome #{player.name}"
-    sleep 1
+  def human_vs_computer_game
+    player_names(@player_1)
+    @player_2.name = @player_2.generate_computer_name
+    puts "#{@player_2.name} is your computer opponent"
+    set_tokens
+    until game_over
+      turn(@player_1.name, @player_1.token)
+      @round += 1
+      computer_turn(@player_2.name, @player_2.token)
+      @round += 1
+    end
+      game_over_message
+  end
+
+  def computer_vs_computer_game
+    puts "computer vs computer"
   end
 
 
@@ -88,7 +112,30 @@ class Game
     else
       turn(@player_2.name, @player_2.token)
     end
+  end
 
+
+  def computer_turn(name, token)
+    @board.print_board
+    round_message(name)
+    computer_random_selection(name, token)
+    sleep 1
+  end
+
+  def computer_random_selection(name, token)
+    available_spaces = []
+    @board.board.each_with_index {|cell, index| available_spaces << index if cell == "-"}
+    cell = available_spaces.sample
+    @board.board[cell] = token
+    #this message needs to be elsewhere
+    computer_place_token_message(name, cell)
+  end
+
+
+
+  def computer_place_token_message(name, index)
+    index += 1
+    puts "#{name} has placed a token at #{index}"
   end
 
   def game_over
@@ -124,10 +171,10 @@ class Game
     end
   end
 
-  def update(player_symbol)
+  def update(token)
     input = get_valid_input
     if @board.board[input] == "-"
-      @board.board[input] = player_symbol
+      @board.board[input] = token
     end
   end
 
@@ -210,7 +257,21 @@ class Player
     @token = nil
   end
 
+  def generate_computer_name
+    computers = ['Hal', 'WOPR', 'Mother', 'Skynet', 'Jarvis']
+    @name = computers.sample
+  end
+
+  def player_name
+    puts "Please enter your name"
+    @name = gets.chomp
+    sleep 1
+    puts "Welcome #{@name}"
+    sleep 1
+  end
+
+
 end
 
 game = Game.new
-game.play_game
+game.start_game
