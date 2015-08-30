@@ -20,17 +20,15 @@ class Game
     sleep 1
   end
 
-
-  def start_game
+# look at using a hash to protect the order of the variables
+  def play_game
       welcome_message
       @players.each {|player| player_names(player)}
       set_tokens
       until game_over
         @players.each do |player|
-          @board.print_board
-          round_message(player.name)
-          update(player.token)
-          check_for_winner(player)
+          turn(player.name, player.token)
+          @round += 1
         end
       end
       game_over_message
@@ -45,7 +43,6 @@ class Game
   end
 
 
-#watch this interface
   def set_tokens
     puts "Please select your gameplay token...#{@tokens[0]} or #{@tokens[1]}"
     token = gets.chomp.upcase
@@ -64,8 +61,15 @@ class Game
     puts "It's round #{@round} and it's #{player_name}'s turn"
   end
 
+  def turn(name,token)
+    @board.print_board
+    round_message(name)
+    update(token)
+    check_for_winner(token, name)
+  end
+
   def game_over
-    @winner != nil || @round > 9
+     @winner || @round > 9
   end
 
   def game_over_message
@@ -77,10 +81,10 @@ class Game
   end
 
 #watch this interface
-  def check_for_winner(player)
+  def check_for_winner(token, name)
     @win_conditions.each do |row|
-      if row.all? {|cell| @board.board[cell] == player.token}
-        @winner = player.name
+      if row.all? {|cell| @board.board[cell] == token}
+        @winner = name
       end
     end
   end
@@ -202,4 +206,4 @@ class Player
 end
 
 game = Game.new
-game.start_game
+game.play_game
