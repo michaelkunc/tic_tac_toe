@@ -9,6 +9,7 @@ class Game
                        [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     @winner = nil
     @round = 1
+    @turn_order = 'normal'
     @game_types = {1 => "Human vs. Human", 2 => "Human vs. Computer", 3 => "Computer vs Computer"}
     @this_game_type = nil
   end
@@ -54,6 +55,7 @@ class Game
       @player_1.player_name
       @player_2.player_name
       set_tokens
+      get_turn_order
       until game_over
           take_turns
           @round += 1
@@ -65,12 +67,21 @@ class Game
     @player_1.player_name
     @player_2.generate_computer_name
     puts "#{@player_2.name} is your computer opponent"
+    get_turn_order
     set_tokens
     until game_over
-      turn(@player_1.name, @player_1.token)
-      @round += 1
-      computer_turn(@player_2.name, @player_2.token, @player_1.token)
-      @round += 1
+      if @turn_order == 'normal'
+        turn(@player_1.name, @player_1.token)
+        @round += 1
+        computer_turn(@player_2.name, @player_2.token, @player_1.token)
+        @round += 1
+      else
+        computer_turn(@player_2.name, @player_2.token, @player_1.token)
+        @round += 1
+        turn(@player_1.name, @player_1.token)
+        @round += 1
+      end
+
     end
       game_over_message
   end
@@ -94,6 +105,20 @@ class Game
     end
   end
 
+  def get_turn_order
+    puts "Would you like to go first? Select 'Y' or 'N' "
+    input = gets.chomp.upcase
+    if (['Y', 'N']).include?(input)
+      if input == 'N'
+        @turn_order = 'reverse'
+      end
+    else
+      puts 'Please select Y or N'
+      get turn_order
+    end
+
+  end
+
   def round_message(player_name)
     puts "It's round #{@round} and it's #{player_name}'s turn"
   end
@@ -107,10 +132,18 @@ class Game
   end
 
   def take_turns
-    if @round.odd?
-      turn(@player_1.name, @player_1.token)
+    if @turn_order == 'normal'
+      if @round.odd?
+        turn(@player_1.name, @player_1.token)
+      else
+        turn(@player_2.name, @player_2.token)
+      end
     else
-      turn(@player_2.name, @player_2.token)
+      if @round.odd?
+        turn(@player_2.name, @player_2.token)
+      else
+        turn(@player_1.name, @player_1.token)
+      end
     end
   end
 
@@ -138,27 +171,32 @@ class Game
   end
 
   def computer_protect(name, token, opponent_token)
-    #this iteration is happening correctly
       @win_conditions.each do |row|
-        #this condition is not being evaluated properly this is returning zero
-        puts row.count(opponent_token)
-        if row.count(opponent_token) > 1
-          cell = row.index("-")
-          @board.board[cell] = token
-          commputer_place_token_message(name,cell )
-        else
-          puts "If logic seems to be broken"
+        available_spaces
+        evaluation_row = []
+        cell = row & available_spaces
+        if cell.length > 0
+          cell = cell[0]
+          row.each {|element| evaluation_row << @board.board[element]}
+          if evaluation_row.count(opponent_token) > 1
+            @board.board[cell] = token
+            computer_place_token_message(name, cell)
+          end
         end
       end
 
   end
 
-  def computer_random(name, token)
+  def available_spaces
     available_spaces = []
     @board.board.each_with_index {|cell, index| available_spaces << index if cell == "-"}
+    available_spaces
+  end
+
+  def computer_random(name, token)
+    available_spaces
     cell = available_spaces.sample
     @board.board[cell] = token
-    #this message needs to be elsewhere
     computer_place_token_message(name, cell)
   end
 
@@ -307,5 +345,5 @@ class Player
 
 end
 
-# game = Game.new
-# game.start_game
+game = Game.new
+game.start_game
