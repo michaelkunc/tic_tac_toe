@@ -38,7 +38,6 @@ class Game
     @this_game_type = @game_types[input]
   end
 
-#not crazy about this design right now
   def game_selection
     case @this_game_type
     when @game_types[1]
