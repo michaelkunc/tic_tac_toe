@@ -151,15 +151,17 @@ class Game
   def computer_turn(name, token, opponent_token)
     @board.print_board
     round_message(name)
-    computer_evaluate_board(name,token, opponent_token)
+    computer_evaluate_board(name, token, opponent_token)
+    check_for_winner(token, name)
+    @board.print_board if game_over
     sleep 1
   end
 
   def computer_evaluate_board(name, token, opponent_token)
-    if @board.board[4] == "-"
+    if @board.board[4] == @board.empty_space
       computer_center(name, token)
-    elsif @board.board.count(opponent_token) > 1
-      computer_protect(name, token, opponent_token)
+    elsif @board.board[0] == @board.empty_space || @board.board[2] == @board.empty_space || @board.board[6] == @board.empty_space || @board.board[8] == @board.empty_space
+      computer_corner(name, token)
     else
       computer_random(name, token)
     end
@@ -170,37 +172,52 @@ class Game
       computer_place_token_message(name, 4)
   end
 
-  def computer_protect(name, token, opponent_token)
-      @win_conditions.each do |row|
-        available_spaces
-        evaluation_row = []
-        cell = row & available_spaces
-        if cell.length > 0
-          cell = cell[0]
-          row.each {|element| evaluation_row << @board.board[element]}
-          if evaluation_row.count(opponent_token) > 1
-            @board.board[cell] = token
-            computer_place_token_message(name, cell)
-          end
-        end
-      end
+  # def computer_protect(name, token, opponent_token)
+  #     @win_conditions.each do |row|
+  #       puts "this is the outer win conditions loop"
+  #       available_spaces
+  #       evaluation_row = []
+  #       cell = row & available_spaces
+  #       if cell.length > 0
+  #         puts "this is inside the cell length > 1 loop"
+  #         cell = cell[0]
+  #         row.each {|element| evaluation_row << @board.board[element]}
+  #         if evaluation_row.count(opponent_token) > 1 && @board.board[cell] != token
+  #           puts "this is inside the token placement loop"
+  #           @board.board[cell] = token
+  #           computer_place_token_message(name, cell)
+  #         end
+  #       end
+  #     end
+  # end
 
-  end
-
-  def available_spaces
-    available_spaces = []
-    @board.board.each_with_index {|cell, index| available_spaces << index if cell == "-"}
+  def computer_corner(name, token)
     available_spaces
+    corners = [0,2,6,8]
+    possible_cells = available_spaces & corners
+    cell = possible_cells[0]
+    if cell
+      @board.board[cell] = token
+      computer_place_token_message(name, cell)
+    end
   end
+
 
   def computer_random(name, token)
     available_spaces
     cell = available_spaces.sample
-    @board.board[cell] = token
-    computer_place_token_message(name, cell)
+    if cell
+      @board.board[cell] = token
+      computer_place_token_message(name, cell)
+    end
   end
 
 
+  def available_spaces
+    available_spaces = []
+    @board.board.each_with_index {|cell, index| available_spaces << index if cell == @board.empty_space}
+    available_spaces
+  end
 
 
 
@@ -234,7 +251,7 @@ class Game
   def get_valid_input
     puts "Please select your spot"
     input = gets.chomp.to_i - 1
-    if (0..8).include?(input) && @board.board[input] == "-"
+    if (0..8).include?(input) && @board.board[input] == @board.empty_space
       input
     else
       puts 'that selection is not valid'
@@ -245,72 +262,20 @@ class Game
 
   def update(token)
     input = get_valid_input
-    if @board.board[input] == "-"
+    if @board.board[input] == @board.empty_space
       @board.board[input] = token
     end
   end
-
-
-
-  # def eval_board
-  #   spot = nil
-  #   until spot
-  #     if @board[4] == "4"
-  #       spot = 4
-  #       @board[spot] = @computer_token
-  #     else
-  #       spot = get_best_move(@board, @computer_token)
-  #       if @board[spot] != "X" && @board[spot] != "O"
-  #         @board[spot] = @computer_token
-  #       else
-  #         spot = nil
-  #       end
-  #     end
-  #   end
-  # end
-
-  # def get_best_move(board, next_player, depth = 0, best_score = {})
-  #   available_spaces = []
-  #   best_move = nil
-  #   board.each do |s|
-  #     if s != "X" && s != "O"
-  #       available_spaces << s
-  #     end
-  #   end
-  #   available_spaces.each do |as|
-  #     board[as.to_i] = @computer_token
-  #     if game_is_over(board)
-  #       best_move = as.to_i
-  #       board[as.to_i] = as
-  #       return best_move
-  #     else
-  #       board[as.to_i] = @human_token
-  #       if game_is_over(board)
-  #         best_move = as.to_i
-  #         board[as.to_i] = as
-  #         return best_move
-  #       else
-  #         board[as.to_i] = as
-  #       end
-  #     end
-  #   end
-  #   if best_move
-  #     return best_move
-  #   else
-  #     n = rand(0..available_spaces.count)
-  #     return available_spaces[n].to_i
-  #   end
-  # end
-
 
 end
 
 
 class Board
-  attr_reader :board
+  attr_reader :board, :empty_space
 
   def initialize
-    @board = Array.new(9, "-")
+    @empty_space = "-"
+    @board = Array.new(9, @empty_space)
   end
 
   def print_board
