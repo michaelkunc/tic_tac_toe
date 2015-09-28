@@ -1,3 +1,5 @@
+require_relative 'messages'
+
 class Game
   def initialize
     @board = Board.new
@@ -21,18 +23,15 @@ class Game
   end
 
   def welcome_message
-    puts 'Welcome to my Tic Tac Toe game'
-    sleep 1
-    puts '-------------------------------'
+    Messages.welcome
     @board.print_board
-    puts 'The board is numbered 1 - 9 starting with the top left'
-    sleep 1
+    Messages.numbering
   end
 
   def game_selection_message
-    puts 'Please select the type of game your would like to play'
+    Messages.game_selection
     @game_types.each do |key, value|
-      puts "Select #{key} for #{value}"
+    Messages.game_types(key, value)
     end
     input = gets.chomp.to_i
     @this_game_type = @game_types[input]
@@ -45,7 +44,7 @@ class Game
     when @game_types[2]
       human_vs_computer_game
     when @game_types[3]
-      computer_vs_computer_game
+      Messages.computer_vs_computer_game
     end
   end
 
@@ -79,13 +78,8 @@ class Game
         turn(@player_1.name, @player_1.token)
         @round += 1
       end
-
     end
     game_over_message
-  end
-
-  def computer_vs_computer_game
-    puts 'computer vs computer'
   end
 
   def set_tokens
@@ -145,7 +139,7 @@ class Game
 
   def computer_turn(name, token, opponent_token)
     @board.print_board
-    round_message(name)
+    Messages.round_message(@round, name)
     computer_evaluate_board(name, token, opponent_token)
     check_for_winner(token, name)
     @board.print_board if game_over
@@ -214,7 +208,7 @@ class Game
 
   def computer_place_token_message(name, index)
     index += 1
-    puts "#{name} has placed a token at #{index}"
+    Messages.place_token_message(name, index)
   end
 
   def game_over
