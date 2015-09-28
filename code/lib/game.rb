@@ -153,9 +153,9 @@ class Game
   end
 
   def computer_evaluate_board(name, token, opponent_token)
-    if @board.board[4] == @board.empty_space
+    if @board.grid[4] == Board::EMPTY_SPACE
       computer_center(name, token)
-    elsif @board.board[0] == @board.empty_space || @board.board[2] == @board.empty_space || @board.board[6] == @board.empty_space || @board.board[8] == @board.empty_space
+    elsif @board.grid[0] ==  Board::EMPTY_SPACE || @board.grid[2] ==  Board::EMPTY_SPACE || @board.grid[6] ==  Board::EMPTY_SPACE || @board.grid[8] == Board::EMPTY_SPACE
       computer_corner(name, token)
     else
       computer_random(name, token)
@@ -163,7 +163,7 @@ class Game
   end
 
   def computer_center(name, token)
-    @board.board[4] = token
+    @board.grid[4] = token
     computer_place_token_message(name, 4)
   end
 
@@ -176,10 +176,10 @@ class Game
   #       if cell.length > 0
   #         puts "this is inside the cell length > 1 loop"
   #         cell = cell[0]
-  #         row.each {|element| evaluation_row << @board.board[element]}
-  #         if evaluation_row.count(opponent_token) > 1 && @board.board[cell] != token
+  #         row.each {|element| evaluation_row << @board.grid[element]}
+  #         if evaluation_row.count(opponent_token) > 1 && @board.grid[cell] != token
   #           puts "this is inside the token placement loop"
-  #           @board.board[cell] = token
+  #           @board.grid[cell] = token
   #           computer_place_token_message(name, cell)
   #         end
   #       end
@@ -192,7 +192,7 @@ class Game
     possible_cells = available_spaces & corners
     cell = possible_cells[0]
     if cell
-      @board.board[cell] = token
+      @board.grid[cell] = token
       computer_place_token_message(name, cell)
     end
   end
@@ -201,14 +201,14 @@ class Game
     available_spaces
     cell = available_spaces.sample
     if cell
-      @board.board[cell] = token
+      @board.grid[cell] = token
       computer_place_token_message(name, cell)
     end
   end
 
   def available_spaces
     available_spaces = []
-    @board.board.each_with_index { |cell, index| available_spaces << index if cell == @board.empty_space }
+    @board.grid.each_with_index { |cell, index| available_spaces << index if cell ==  Board::EMPTY_SPACE }
     available_spaces
   end
 
@@ -231,7 +231,7 @@ class Game
 
   def check_for_winner(token, name)
     @win_conditions.each do |row|
-      if row.all? { |cell| @board.board[cell] == token }
+      if row.all? { |cell| @board.grid[cell] == token }
         @winner = name
       end
     end
@@ -240,7 +240,7 @@ class Game
   def get_valid_input
     puts 'Please select your spot'
     input = gets.chomp.to_i - 1
-    if (0..8).include?(input) && @board.board[input] == @board.empty_space
+    if (0..8).include?(input) && @board.grid[input] == Board::EMPTY_SPACE
       input
     else
       puts 'that selection is not valid'
@@ -251,8 +251,8 @@ class Game
 
   def update(token)
     input = get_valid_input
-    if @board.board[input] == @board.empty_space
-      @board.board[input] = token
+    if @board.grid[input] == Board::EMPTY_SPACE
+      @board.grid[input] = token
     end
   end
 
@@ -260,15 +260,16 @@ end
 
 
 class Board
-  attr_reader :board, :empty_space
+  attr_reader :grid
+  EMPTY_SPACE = '-'
+
   def initialize
-    @empty_space = '-'
-    @board = Array.new(9, @empty_space)
+    @grid = Array.new(9, EMPTY_SPACE)
   end
 
   def print_board
     puts "\n"
-    @board.each_slice(3) { |row| puts row.join(' | ') }
+    @grid.each_slice(3) { |row| puts row.join(' | ') }
     puts "\n"
   end
 end
