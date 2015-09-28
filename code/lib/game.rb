@@ -5,12 +5,12 @@ class Game
     @player_1 = Player.new
     @player_2 = Player.new
     @players = [@player_1, @player_2]
-    @win_conditions = [[0, 1 ,2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
+    @win_conditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6],
                        [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     @winner = nil
     @round = 1
     @turn_order = 'normal'
-    @game_types = {1 => "Human vs. Human", 2 => "Human vs. Computer", 3 => "Computer vs Computer"}
+    @game_types = { 1 => 'Human vs. Human', 2 => 'Human vs. Computer', 3 => 'Computer vs Computer' }
     @this_game_type = nil
   end
 
@@ -21,16 +21,16 @@ class Game
   end
 
   def welcome_message
-    puts "Welcome to my Tic Tac Toe game"
+    puts 'Welcome to my Tic Tac Toe game'
     sleep 1
-    puts "-------------------------------"
+    puts '-------------------------------'
     @board.print_board
-    puts "The board is numbered 1 - 9 starting with the top left"
+    puts 'The board is numbered 1 - 9 starting with the top left'
     sleep 1
   end
 
   def game_selection_message
-    puts "Please select the type of game your would like to play"
+    puts 'Please select the type of game your would like to play'
     @game_types.each do |key, value|
       puts "Select #{key} for #{value}"
     end
@@ -49,17 +49,16 @@ class Game
     end
   end
 
-
   def human_vs_human_game
-      @player_1.player_name
-      @player_2.player_name
-      set_tokens
-      get_turn_order
-      until game_over
-          take_turns
-          @round += 1
-      end
-      game_over_message
+    @player_1.player_name
+    @player_2.player_name
+    set_tokens
+    get_turn_order
+    until game_over
+      take_turns
+      @round += 1
+    end
+    game_over_message
   end
 
   def human_vs_computer_game
@@ -82,13 +81,12 @@ class Game
       end
 
     end
-      game_over_message
+    game_over_message
   end
 
   def computer_vs_computer_game
-    puts "computer vs computer"
+    puts 'computer vs computer'
   end
-
 
   def set_tokens
     puts "Please select your gameplay token...#{@tokens[0]} or #{@tokens[1]}"
@@ -115,14 +113,13 @@ class Game
       puts 'Please select Y or N'
       get turn_order
     end
-
   end
 
   def round_message(player_name)
     puts "It's round #{@round} and it's #{player_name}'s turn"
   end
 
-  def turn(name,token)
+  def turn(name, token)
     @board.print_board
     round_message(name)
     update(token)
@@ -146,7 +143,6 @@ class Game
     end
   end
 
-
   def computer_turn(name, token, opponent_token)
     @board.print_board
     round_message(name)
@@ -167,8 +163,8 @@ class Game
   end
 
   def computer_center(name, token)
-      @board.board[4] = token
-      computer_place_token_message(name, 4)
+    @board.board[4] = token
+    computer_place_token_message(name, 4)
   end
 
   # def computer_protect(name, token, opponent_token)
@@ -192,7 +188,7 @@ class Game
 
   def computer_corner(name, token)
     available_spaces
-    corners = [0,2,6,8]
+    corners = [0, 2, 6, 8]
     possible_cells = available_spaces & corners
     cell = possible_cells[0]
     if cell
@@ -200,7 +196,6 @@ class Game
       computer_place_token_message(name, cell)
     end
   end
-
 
   def computer_random(name, token)
     available_spaces
@@ -211,23 +206,19 @@ class Game
     end
   end
 
-
   def available_spaces
     available_spaces = []
-    @board.board.each_with_index {|cell, index| available_spaces << index if cell == @board.empty_space}
+    @board.board.each_with_index { |cell, index| available_spaces << index if cell == @board.empty_space }
     available_spaces
   end
-
-
 
   def computer_place_token_message(name, index)
     index += 1
     puts "#{name} has placed a token at #{index}"
   end
 
-
   def game_over
-     @winner || @round > 9
+    @winner || @round > 9
   end
 
   def game_over_message
@@ -240,15 +231,14 @@ class Game
 
   def check_for_winner(token, name)
     @win_conditions.each do |row|
-      if row.all? {|cell| @board.board[cell] == token}
+      if row.all? { |cell| @board.board[cell] == token }
         @winner = name
       end
     end
   end
 
-
   def get_valid_input
-    puts "Please select your spot"
+    puts 'Please select your spot'
     input = gets.chomp.to_i - 1
     if (0..8).include?(input) && @board.board[input] == @board.empty_space
       input
@@ -271,18 +261,16 @@ end
 
 class Board
   attr_reader :board, :empty_space
-
   def initialize
-    @empty_space = "-"
+    @empty_space = '-'
     @board = Array.new(9, @empty_space)
   end
 
   def print_board
     puts "\n"
-    @board.each_slice(3) {|row| puts row.join(" | ")}
+    @board.each_slice(3) { |row| puts row.join(' | ') }
     puts "\n"
   end
-
 end
 
 class Player
@@ -299,14 +287,12 @@ class Player
   end
 
   def player_name
-    puts "Please enter your name"
+    puts 'Please enter your name'
     @name = gets.chomp
     sleep 1
     puts "Welcome #{@name}"
     sleep 1
   end
-
-
 end
 
 game = Game.new
