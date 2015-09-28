@@ -63,7 +63,7 @@ class Game
   def human_vs_computer_game
     @player_1.player_name
     @player_2.generate_computer_name
-    puts "#{@player_2.name} is your computer opponent"
+    Messages.computer_player_name(@player_2.name)
     get_turn_order
     set_tokens
     until game_over
@@ -83,39 +83,35 @@ class Game
   end
 
   def set_tokens
-    puts "Please select your gameplay token...#{@tokens[0]} or #{@tokens[1]}"
+    Messages.set_tokens(@tokens[0], @tokens[1])
     token = gets.chomp.upcase
     if @tokens.include?(token)
       @player_1.token = token
       @tokens.delete(token)
       @player_2.token = @tokens[0]
     else
-      puts "Let's try that again"
-      sleep 2
+      Messages.try_again
       set_tokens
     end
   end
 
   def get_turn_order
-    puts "Would you like to go first? Select 'Y' or 'N' "
+    Messages.turn_order
+    Messages.y_or_n
     input = gets.chomp.upcase
     if (['Y', 'N']).include?(input)
       if input == 'N'
         @turn_order = 'reverse'
       end
     else
-      puts 'Please select Y or N'
+      Messages.y_or_n
       get turn_order
     end
   end
 
-  def round_message(player_name)
-    puts "It's round #{@round} and it's #{player_name}'s turn"
-  end
-
   def turn(name, token)
     @board.print_board
-    round_message(name)
+    Messages.round(@round, name)
     update(token)
     check_for_winner(token, name)
     @board.print_board if game_over
@@ -139,7 +135,7 @@ class Game
 
   def computer_turn(name, token, opponent_token)
     @board.print_board
-    Messages.round_message(@round, name)
+    Messages.round(@round, name)
     computer_evaluate_board(name, token, opponent_token)
     check_for_winner(token, name)
     @board.print_board if game_over
@@ -217,9 +213,9 @@ class Game
 
   def game_over_message
     if @winner
-      puts "Congrats! #{@winner}. You Won!!!"
+      Messages.winner(@winner)
     else
-      puts "It's a tie"
+      Messages.tie
     end
   end
 
@@ -232,13 +228,12 @@ class Game
   end
 
   def get_valid_input
-    puts 'Please select your spot'
+    Messages.select
     input = gets.chomp.to_i - 1
     if (0..8).include?(input) && @board.grid[input] == Board::EMPTY_SPACE
       input
     else
-      puts 'that selection is not valid'
-      sleep 1
+      Messages.try_again
       get_valid_input
     end
   end
