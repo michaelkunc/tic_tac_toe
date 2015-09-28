@@ -26,11 +26,44 @@ class Messages
     puts 'computer vs computer'
   end
 
-  def self.round_message(round, player_name)
+  def self.round(round, player_name)
     puts "It's round #{round} and it's #{player_name}'s turn"
   end
 
   def self.place_token_message(name, index)
     puts "#{name} has placed a token at #{index}"
+  end
+
+  def self.computer_player_name(name)
+    puts "#{name} is your computer opponent"
+  end
+
+  def self.set_tokens(token1, token2)
+    puts "Please select your gameplay token...#{token1} or #{token2}"
+  end
+
+  def self.try_again
+    puts "let's try that again"
+    pause
+  end
+
+  def self.turn_order
+    puts "Would you like to go first?"
+  end
+
+  def self.y_or_n
+    puts "Please select 'Y' or 'N'"
+  end
+
+  def self.winner(name)
+    puts "Congrats! #{name}. You won!!!"
+  end
+
+  def self.tie
+    puts "It's a tie"
+  end
+
+  def self.select
+    puts 'Please select your spot'
   end
 end
