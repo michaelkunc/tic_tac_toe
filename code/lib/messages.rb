@@ -16,10 +16,9 @@ class Messages
 
   def self.game_selection
     puts 'Please select the type of game your would like to play'
-  end
-
-  def self.game_types(key, value)
-    puts "Select #{key} for #{value}"
+    puts 'Select 1 for Human vs Human'
+    puts 'Select 2 for Human vs Computer'
+    puts 'Select 3 for Computer vs Computer'
   end
 
   def self.computer_vs_computer_game

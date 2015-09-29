@@ -12,12 +12,10 @@ class Game
                        [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     @round = 1
     @turn_order = 'normal'
-    @game_types = { 1 => 'Human v Human', 2 => 'Human v Computer', 3 => 'Computer v Computer' }
   end
 
   def start_game
     welcome_message
-    game_selection_message
     game_selection
   end
 
@@ -27,19 +25,12 @@ class Game
     Messages.numbering
   end
 
-  def game_selection_message
-    Messages.game_selection
-    @game_types.each do |key, value|
-      Messages.game_types(key, value)
-    end
-    input = gets.chomp.to_i
-    @this_game_type = @game_types[input]
-  end
-
   def game_selection
-    human_vs_human_game if @this_game_type == @game_types[1]
-    human_vs_computer_game if @this_game_type == @game_types[2]
-    Messages.computer_vs_computer_game if @this_game_type == @game_types[3]
+    Messages.game_selection
+    input = gets.chomp.to_i
+    human_vs_human_game if input == 1
+    human_vs_computer_game if input == 2
+    Messages.computer_vs_computer_game if input == 3
   end
 
   def human_vs_human_game
@@ -47,7 +38,7 @@ class Game
     @player_2.player_name
     set_tokens
     set_turn_order
-    take_turns until game_over
+    take_turns_with_human until game_over
     game_over_message
   end
 
@@ -57,15 +48,7 @@ class Game
     Messages.computer_player_name(@player_2.name)
     set_turn_order
     set_tokens
-    until game_over
-      if @turn_order == 'normal'
-        turn(@player_1.name, @player_1.token)
-        computer_turn(@player_2.name, @player_2.token, @player_1.token)
-      else
-        computer_turn(@player_2.name, @player_2.token, @player_1.token)
-        turn(@player_1.name, @player_1.token)
-      end
-    end
+    take_turns_with_computer until game_over
     game_over_message
   end
 
@@ -103,30 +86,36 @@ class Game
     @board.print_board if game_over
   end
 
-  def take_turns
+  def take_turns_with_human
     if @turn_order == 'normal' && @round.odd?
       turn(@player_1.name, @player_1.token)
-      turn(@player_2.name, @player_2.token)
     else
       turn(@player_2.name, @player_2.token)
-      turn(@player_1.name, @player_1.token)
     end
   end
 
-  def computer_turn(name, token, opponent_token)
+  def take_turns_with_computer
+    if @turn_order == 'normal' && @round.odd?
+      turn(@player_1.name, @player_1.token)
+    else
+      computer_turn(@player_2.name, @player_2.token)
+    end
+  end
+
+  def computer_turn(name, token)
     @board.print_board
     Messages.round(@round, name)
     computer_evaluate_board(name, token)
     check_for_winner(token, name)
     @round += 1
     @board.print_board if game_over
-    sleep 1
+    Messages.pause
   end
 
   def computer_evaluate_board(name, token)
-    if @board.grid[4] == Board::EMPTY_SPACE
+    if @board.grid[4] == Board::EMPTY
       computer_center(name, token)
-    elsif @board.grid[0] == Board::EMPTY_SPACE || @board.grid[2] == Board::EMPTY_SPACE || @board.grid[6] == Board::EMPTY_SPACE || @board.grid[8] == Board::EMPTY_SPACE
+    elsif @board.grid[0] == Board::EMPTY || @board.grid[2] == Board::EMPTY || @board.grid[6] == Board::EMPTY || @board.grid[8] == Board::EMPTY
       computer_corner(name, token)
     else
       computer_random(name, token)
@@ -160,8 +149,7 @@ class Game
   def computer_corner(name, token)
     available_spaces
     corners = [0, 2, 6, 8]
-    possible_cells = available_spaces & corners
-    cell = possible_cells[0]
+    cell = (available_spaces & corners)[0]
     if cell
       @board.grid[cell] = token
       computer_place_token_message(name, cell)
@@ -179,7 +167,7 @@ class Game
 
   def available_spaces
     available_spaces = []
-    @board.grid.each_with_index { |cell, index| available_spaces << index if cell == Board::EMPTY_SPACE }
+    @board.grid.each_with_index { |cell, index| available_spaces << index if cell == Board::EMPTY }
     available_spaces
   end
 
@@ -205,7 +193,7 @@ class Game
   def get_valid_input
     Messages.select
     input = gets.chomp.to_i - 1
-    if (0..8).include?(input) && @board.grid[input] == Board::EMPTY_SPACE
+    if (0..8).include?(input) && @board.grid[input] == Board::EMPTY
       input
     else
       Messages.try_again
@@ -215,6 +203,6 @@ class Game
 
   def update(token)
     input = get_valid_input
-    @board.grid[input] = token if @board.grid[input] == Board::EMPTY_SPACE
+    @board.grid[input] = token if @board.grid[input] == Board::EMPTY
   end
 end
