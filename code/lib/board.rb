@@ -1,9 +1,9 @@
 class Board
   attr_reader :grid
-  EMPTY_SPACE = '-'
+  EMPTY = '-'
 
   def initialize
-    @grid = Array.new(9, EMPTY_SPACE)
+    @grid = Array.new(9, EMPTY)
   end
 
   def print_board
