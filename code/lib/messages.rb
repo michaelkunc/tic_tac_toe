@@ -11,7 +11,7 @@ class Messages
   end
 
   def self.pause
-    sleep 1
+    # sleep 1
   end
 
   def self.game_selection

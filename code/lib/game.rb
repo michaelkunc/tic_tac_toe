@@ -15,14 +15,10 @@ class Game
   end
 
   def start_game
-    welcome_message
-    game_selection
-  end
-
-  def welcome_message
     Messages.welcome
     @board.print_board
     Messages.numbering
+    game_selection
   end
 
   def game_selection
@@ -113,13 +109,18 @@ class Game
   end
 
   def computer_evaluate_board(name, token)
-    if @board.grid[4] == Board::EMPTY
-      computer_center(name, token)
-    elsif @board.grid[0] == Board::EMPTY || @board.grid[2] == Board::EMPTY || @board.grid[6] == Board::EMPTY || @board.grid[8] == Board::EMPTY
-      computer_corner(name, token)
-    else
-      computer_random(name, token)
-    end
+    return computer_center(name, token) if center_empty?
+    return computer_corner(name, token) if corner_empty?
+    computer_random(name, token)
+  end
+
+  def corner_empty?
+    corners = [@board.grid[0], @board.grid[2], @board.grid[6], @board.grid[8]]
+    corners.any? { |element| element == Board::EMPTY }
+  end
+
+  def center_empty?
+    @board.grid[4] == Board::EMPTY
   end
 
   def computer_center(name, token)
@@ -147,33 +148,24 @@ class Game
   # end
 
   def computer_corner(name, token)
-    available_spaces
     corners = [0, 2, 6, 8]
-    cell = (available_spaces & corners)[0]
-    if cell
-      @board.grid[cell] = token
-      computer_place_token_message(name, cell)
-    end
+    cell = (available_spaces & corners).sample
+    computer_place_token(name, cell, token)
   end
 
   def computer_random(name, token)
-    available_spaces
     cell = available_spaces.sample
-    if cell
-      @board.grid[cell] = token
-      computer_place_token_message(name, cell)
-    end
+    computer_place_token(name, cell, token)
+  end
+
+  def computer_place_token(name, cell, token)
+    @board.grid[cell] = token
+    cell += 1
+    Messages.place_token_message(name, cell)
   end
 
   def available_spaces
-    available_spaces = []
-    @board.grid.each_with_index { |cell, index| available_spaces << index if cell == Board::EMPTY }
-    available_spaces
-  end
-
-  def computer_place_token_message(name, index)
-    index += 1
-    Messages.place_token_message(name, index)
+    @board.grid.each_index.select { |index| @board.grid[index] == Board::EMPTY }
   end
 
   def game_over
@@ -190,19 +182,16 @@ class Game
     end
   end
 
-  def get_valid_input
+  def select_spot
     Messages.select
     input = gets.chomp.to_i - 1
-    if (0..8).include?(input) && @board.grid[input] == Board::EMPTY
-      input
-    else
-      Messages.try_again
-      get_valid_input
-    end
+    return input if (0..8).include?(input) && @board.grid[input] == Board::EMPTY
+    Messages.try_again
+    select_spot
   end
 
   def update(token)
-    input = get_valid_input
+    input = select_spot
     @board.grid[input] = token if @board.grid[input] == Board::EMPTY
   end
 end
