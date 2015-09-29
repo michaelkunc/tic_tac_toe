@@ -1,9 +1,11 @@
 require_relative 'messages'
+require_relative 'player'
+require_relative 'board'
 
 class Game
   def initialize
     @board = Board.new
-    @tokens = %w(X, O)
+    @tokens = %w(X O)
     @player_1 = Player.new
     @player_2 = Player.new
     @players = [@player_1, @player_2]
@@ -85,6 +87,7 @@ class Game
   def set_tokens
     Messages.set_tokens(@tokens[0], @tokens[1])
     token = gets.chomp.upcase
+    puts token
     if @tokens.include?(token)
       @player_1.token = token
       @tokens.delete(token)
@@ -99,7 +102,7 @@ class Game
     Messages.turn_order
     Messages.y_or_n
     input = gets.chomp.upcase
-    if %w(Y, N).include?(input)
+    if (['Y', 'N']).include?(input)
       if input == 'N'
         @turn_order = 'reverse'
       end
@@ -136,7 +139,7 @@ class Game
   def computer_turn(name, token, opponent_token)
     @board.print_board
     Messages.round(@round, name)
-    computer_evaluate_board(name, token, opponent_token)
+    computer_evaluate_board(name, token)
     check_for_winner(token, name)
     @board.print_board if game_over
     sleep 1
@@ -246,44 +249,3 @@ class Game
   end
 
 end
-
-
-class Board
-  attr_reader :grid
-  EMPTY_SPACE = '-'
-
-  def initialize
-    @grid = Array.new(9, EMPTY_SPACE)
-  end
-
-  def print_board
-    puts "\n"
-    @grid.each_slice(3) { |row| puts row.join(' | ') }
-    puts "\n"
-  end
-end
-
-class Player
-  attr_accessor :name, :token
-
-  def initialize
-    @name = nil
-    @token = nil
-  end
-
-  def generate_computer_name
-    computers = w%(Hal, WOPR, Mother, Skynet, Jarvis)
-    @name = computers.sample
-  end
-
-  def player_name
-    puts 'Please enter your name'
-    @name = gets.chomp
-    sleep 1
-    puts "Welcome #{@name}"
-    sleep 1
-  end
-end
-
-game = Game.new
-game.start_game
