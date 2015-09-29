@@ -48,7 +48,7 @@ class Messages
   end
 
   def self.turn_order
-    puts "Would you like to go first?"
+    puts 'Would you like to go first?'
   end
 
   def self.y_or_n
