@@ -51,6 +51,10 @@ describe 'Game' do
   it 'should return true if the center square is open' do
     expect(game.center_empty?).to eq(true)
   end
+
+  it 'should return true if corners are open' do
+    expect(game.corner_empty?).to eq(true)
+  end
 end
 
 describe 'Board' do
