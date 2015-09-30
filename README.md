@@ -3,6 +3,7 @@
 Welcome to my command line Tic-tac-toe game.
 
 Ruby version 2.2.2
+Rspec version 3.3.2
 
 ##Playing the game
 
