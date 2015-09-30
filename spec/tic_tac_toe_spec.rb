@@ -18,14 +18,6 @@ describe 'Game' do
     expect(game.instance_variable_get(:@tokens)).to eq(%w(X O))
   end
 
-  it 'should have a player object for player 1' do
-    expect(game.instance_variable_get(:@player_1)).to be_an_instance_of Player
-  end
-
-  it 'should have a player object for player 2' do
-    expect(game.instance_variable_get(:@player_2)).to be_an_instance_of Player
-  end
-
   it 'should start with Round 1' do
     expect(game.instance_variable_get(:@round)).to eq(1)
   end
