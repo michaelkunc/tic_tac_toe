@@ -35,7 +35,7 @@ class Game
     @player_2.player_name
     set_tokens
     set_turn_order
-    take_turns_with_human until game_over
+    take_turns_with_human until game_over?
     game_over_message
   end
 
@@ -44,9 +44,8 @@ class Game
     @player_2 = ComputerPlayer.new
     @player_2.generate_computer_name
     Messages.computer_player_name(@player_2.name)
-    set_turn_order
     set_tokens
-    take_turns_with_computer until game_over
+    take_turns_with_computer until game_over?
     game_over_message
   end
 
@@ -81,7 +80,7 @@ class Game
     update(token)
     check_for_winner(token, name)
     @round += 1
-    @board.print_board if game_over
+    @board.print_board if game_over?
   end
 
   def take_turns_with_human
@@ -95,13 +94,8 @@ class Game
   end
 
   def take_turns_with_computer
-    if @turn_order == 'normal'
-      turn(@player_1.name, @player_1.token)
-      computer_turn(@player_2.name, @player_2.token, @board)
-    else
-      computer_turn(@player_2.name, @player_2.token, @board)
-      turn(@player_1.name, @player_1.token)
-    end
+    turn(@player_1.name, @player_1.token)
+    computer_turn(@player_2.name, @player_2.token, @board)
   end
 
   def computer_turn(name, token, board)
@@ -110,11 +104,11 @@ class Game
     @player_2.computer_evaluate_board(name, token, board)
     check_for_winner(token, name)
     @round += 1
-    @board.print_board if game_over
+    @board.print_board if game_over?
     Messages.pause
   end
 
-  def game_over
+  def game_over?
     @winner || @round > 9
   end
 
