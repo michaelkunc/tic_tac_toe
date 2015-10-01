@@ -25,6 +25,15 @@ class Messages
     puts 'computer vs computer'
   end
 
+  def self.enter_name
+    puts 'Please enter your name'
+  end
+
+  def self.welcome_name(player_name)
+    puts "Welcome #{player_name}"
+    pause
+  end
+
   def self.round(round, player_name)
     puts "It's round #{round} and it's #{player_name}'s turn"
   end

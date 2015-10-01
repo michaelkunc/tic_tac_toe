@@ -12,10 +12,9 @@ class Player
   end
 
   def player_name
-    puts 'Please enter your name'
+    Messages.enter_name
     @name = gets.chomp
-    sleep 1
-    puts "Welcome #{@name}"
-    sleep 1
+    Messages.pause
+    Messages.welcome_name(@name)
   end
 end
